@@ -243,6 +243,20 @@ rk2imp_apply (void *vstate, size_t dim, double t, double h,
 
   const modnewton1_state_t *esol = state->esol;
 
+#ifdef DEBUG
+  {
+    size_t di;
+
+    printf ("rk2imp_apply: t=%.5e, h=%.5e, y:", t, h);
+
+    for (di = 0; di < dim; di++)
+      {
+        printf ("%.5e ", y[di]);
+      }
+    printf ("\n");
+  }
+#endif
+
   /* Runge-Kutta coefficients */
   gsl_matrix *A = state->A;
   const double b[] = { 1.0 };
@@ -284,10 +298,16 @@ rk2imp_apply (void *vstate, size_t dim, double t, double h,
   /* Evaluate Jacobian for modnewton1 */
 
   {
+#ifdef DEBUG
+    printf ("-- evaluate jacobian\n");
+#endif
     int s = GSL_ODEIV_JA_EVAL (sys, t, y, dfdy->data, dfdt);
 
     if (s != GSL_SUCCESS)
       {
+#ifdef DEBUG
+	printf ("-- FAIL at jacobian function evaluation\n");
+#endif
         return s;
       }
   }
@@ -422,6 +442,18 @@ rk2imp_apply (void *vstate, size_t dim, double t, double h,
       }
   }
 
+#ifdef DEBUG
+  {
+    size_t i;
+    printf ("-- error estimates: ");
+    for (i = 0; i < dim; i++)
+      {
+        printf ("%.5e ", yerr[i]);
+      }
+    printf ("\n");
+  }
+#endif
+  
   /* Derivatives at output */
 
   if (dydt_out != NULL)
