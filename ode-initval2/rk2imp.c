@@ -310,6 +310,22 @@ rk2imp_apply (void *vstate, size_t dim, double t, double h,
 #endif
         return s;
       }
+#ifdef DEBUG
+    size_t M;
+    size_t N;
+    size_t i;
+    size_t j;
+
+    M = dfdy->size1;
+    N = dfdy->size2;
+    
+    for(i=0; i<M; i++) {
+      for(j=0; j<N; j++) {
+    	double aij = gsl_matrix_get(dfdy, i, j);
+    	printf("(%3lu,%3lu)[%lu,%lu]: %22.18g\n", M, N, i,j, aij);
+    	}
+    }
+#endif
   }
 
   /* Calculate a single step with size h */
@@ -332,6 +348,20 @@ rk2imp_apply (void *vstate, size_t dim, double t, double h,
         return s;
       }
   }
+
+#ifdef DEBUG
+  {
+    size_t di;
+
+    printf ("YZ:");
+
+    for (di = 0; di < dim * RK2IMP_STAGE; di++)
+      {
+        printf ("%.5e ", YZ[di]);
+      }
+    printf ("\n");
+  }
+#endif
 
   {
     int s = GSL_ODEIV_FN_EVAL (sys, t + c[0] * h, YZ, fYZ);
