@@ -199,7 +199,11 @@ try_step:
       double h_old = h0;
 
       h0 *= 0.5;
-
+      
+#ifdef DEBUG
+      printf("-- gsl_odeiv2_evolve_apply h0=%.5e\n", h0);
+#endif
+      
       /* Check that an actual decrease in h0 occured and the
          suggested h0 will change the time by at least 1 ulp */
 
@@ -218,6 +222,9 @@ try_step:
           }
         else
           {
+#ifdef DEBUG
+	    printf("-- gsl_odeiv2_evolve_apply h0=%.5e, t0=%.5e, step_status=%d\n", h0, t0, step_status);
+#endif
             *h = h0;              /* notify user of step-size which caused the failure */
             *t = t0;              /* restore original t value */
             return step_status;
